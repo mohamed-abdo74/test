@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="D:/SQL Challenge/Week 1/Danny's Diner.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure query browser pragmas" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="1123"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,7:mainmembers"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">/* Query (12) - Bonus
+Rank All The Things
+Danny also requires further information about the ranking of customer products,
+but he purposely does not need the ranking for non-member purchases so he expects 
+null ranking values for the records when customers are not yet part of the loyalty program.
+*/
+
+WITH t AS(
+SELECT sales.customer_id, sales.order_date, menu.product_name, menu.price,
+       CASE WHEN sales.order_date &gt;= members.join_date THEN &quot;Y&quot;
+	   ELSE &quot;N&quot;
+	   END AS &quot;member&quot;
+FROM sales
+JOIN menu
+ON sales.product_id = menu.product_id
+LEFT JOIN members
+ON sales.customer_id = members.customer_id
+)SELECT *, CASE WHEN member NOT LIKE &quot;Y&quot; THEN NULL
+                WHEN member LIKE &quot;Y&quot; THEN DENSE_RANK() OVER(PARTITION BY customer_id, member ORDER BY order_date)
+				END AS &quot;ranking&quot;
+FROM t;</sql><current_tab id="0"/></tab_sql></sqlb_project>
